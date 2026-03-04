@@ -1,56 +1,63 @@
 #include <stdio.h>
 #include <limits.h> // Untuk INT_MAX dan INT_MIN
+#include <float.h>  // Untuk FLT_MAX atau DBL_MAX, meskipun 1e38 juga bisa
 
 int main() {
     int n;
+    int current_num;
+    int prev_num;
+    int min_val = INT_MAX; // Inisialisasi min_val dengan nilai integer terbesar
+    int max_val = INT_MIN; // Inisialisasi max_val dengan nilai integer terkecil
+    float min_avg = FLT_MAX; // Inisialisasi min_avg dengan nilai float terbesar
+    float current_avg;
+    int i;
 
-    printf("Masukkan jumlah bilangan (N): ");
+    // Membaca jumlah data n
     scanf("%d", &n);
 
-    if (n < 2) { // Validasi untuk rata-rata berturut-turut
-        printf("Jumlah bilangan N harus minimal 2 untuk menghitung rata-rata berturut-turut.\n");
-        return 1;
+    // Memastikan n cukup untuk setidaknya satu pasangan rata-rata
+    if (n < 1) {
+        printf("Jumlah data harus minimal 1.\n");
+        return 1; // Keluar dengan kode error
     }
 
-    int arr[n];
+    // Memproses angka pertama secara terpisah untuk inisialisasi prev_num
+    scanf("%d", &prev_num);
+    min_val = prev_num;
+    max_val = prev_num;
 
-    int minVal = INT_MAX;
-    int maxVal = INT_MIN;
-    double min_avg_consecutive = 201.0; // Inisialisasi lebih tinggi dari rata-rata maksimum yang mungkin (100)
+    // Loop untuk sisa (n-1) angka
+    for (i = 1; i < n; i++) {
+        scanf("%d", &current_num);
 
-    printf("Masukkan %d bilangan bulat (antara -100 hingga 100):\n", n);
-    for (int i = 0; i < n; i++) {
-        int currentNum;
-        printf("Bilangan ke-%d: ", i + 1);
-        scanf("%d", &currentNum);
-
-        if (currentNum < -100 || currentNum > 100) {
-            printf("Peringatan: Bilangan %d berada di luar rentang -100 hingga 100. Tetap diproses.\n", currentNum);
+        // Update nilai minimum dan maksimum
+        if (current_num < min_val) {
+            min_val = current_num;
         }
-        
-        arr[i] = currentNum;
-
-        if (arr[i] < minVal) {
-            minVal = arr[i];
+        if (current_num > max_val) {
+            max_val = current_num;
         }
 
-        if (arr[i] > maxVal) {
-            maxVal = arr[i];
+        // Hitung rata-rata pasangan dan perbarui min_avg
+        current_avg = (float)(prev_num + current_num) / 2.0;
+        if (current_avg < min_avg) {
+            min_avg = current_avg;
         }
+
+        // Simpan current_num menjadi prev_num untuk iterasi berikutnya
+        prev_num = current_num;
     }
 
-    // Menghitung rata-rata terendah dari dua nilai berturut-turut
-    for (int i = 0; i < n - 1; i++) {
-        double current_avg = (double)(arr[i] + arr[i+1]) / 2.0;
-        if (current_avg < min_avg_consecutive) {
-            min_avg_consecutive = current_avg;
-        }
+    // Output hasil
+    printf("%d\n", min_val);
+    printf("%d\n", max_val);
+    // Jika n < 2, tidak ada pasangan yang terbentuk, jadi min_avg mungkin masih FLT_MAX.
+    // Asumsi prompt n >= 2 untuk average. Jika n=1, maka rata-rata tidak valid.
+    if (n >= 2) {
+        printf("%.2f\n", min_avg);
+    } else {
+        printf("Tidak cukup data untuk menghitung rata-rata pasangan.\n");
     }
-
-    printf("\n");
-    printf("%d\n", minVal);
-    printf("%d\n", maxVal);
-    printf("%.2f\n", min_avg_consecutive); // Tambahan output
 
     return 0;
 }
